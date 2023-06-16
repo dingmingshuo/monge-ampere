@@ -1,5 +1,7 @@
 #include "ma.hpp"
 
+#include <iostream>
+
 using namespace Eigen;
 
 VectorXd solver::GMRES(const SparseMatrix<double> &A,
@@ -52,4 +54,33 @@ VectorXd solver::GMRES(const SparseMatrix<double> &A,
     }
 
     return x;
+}
+
+VectorXd solver::CG(const SparseMatrix<double> &A,
+                    const VectorXd &b, int max_iter,
+                    double tolerance) {
+    VectorXd x(b.size());
+    x.setZero();
+
+    VectorXd r = b - A * x;
+    VectorXd p = r;
+    double rsold = r.dot(r);
+
+    for (int iter = 0; iter < max_iter; iter++) {
+        VectorXd Ap = A * p;
+        double alpha = rsold / p.dot(Ap);
+        x = x + alpha * p;
+        r = r - alpha * Ap;
+        double rsnew = r.dot(r);
+
+        if (std::sqrt(rsnew) < tolerance) {
+            break;
+        }
+
+        double beta = rsnew / rsold;
+        p = r + beta * p;
+        rsold = rsnew;
+    }
+
+  return x;
 }

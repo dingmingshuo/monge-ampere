@@ -46,7 +46,44 @@ Following examples is available:
 - ./build/example/perron_example_1
 - ./build/example/perron_example_2
 - ./build/example/perron_example_3
+- ./build/example/newton_example_1
+- ./build/example/newton_example_2
+- ./build/example/newton_example_3
 
 Super parameters can be changed in the corresponding source `.cpp` file.
 
 ## Code Structure
+
+```
+.
+├── example
+│   ├── newton_example_1.cpp    // Example 1 for Newton method
+│   ├── newton_example_2.cpp    // Example 2 for Newton method
+│   ├── newton_example_3.cpp    // Example 3 for Newton method
+│   ├── perron_example_1.cpp    // Example 1 for Perron iteration
+│   ├── perron_example_2.cpp    // Example 2 for Perron iteration
+│   └── perron_example_3.cpp    // Example 3 for Perron iteration
+├── include
+│   └── ma.hpp                  // Header file
+├── Makefile
+├── mesh                        // Mesh files (Typo: 2e-k means h = 2^{-k})
+│   ├── 2e-2.obj
+│   ├── 2e-3.obj
+│   ├── 2e-4.obj
+│   ├── 2e-5.obj
+│   ├── 2e-6.obj
+│   ├── 2e-7.obj
+│   └── 2e-8.obj
+├── README.md
+├── source
+│   ├── mesh.cpp                // Mesh struct
+│   ├── mesh_function.cpp       // MeshFunction struct
+│   ├── point.cpp               // Point struct
+│   ├── solver.cpp              // Solver namespace (include CG and GMRES)
+│   └── two_scale.cpp           // TwoScale namespace (include Newton and Perron)
+└── test
+    ├── mesh.cpp                // Test for Mesh struct
+    ├── mesh_function.cpp       // Test for MeshFunction struct
+    ├── solver.cpp              // Test for Solver namespace
+    └── test_main.cpp           // Main function for all tests
+```

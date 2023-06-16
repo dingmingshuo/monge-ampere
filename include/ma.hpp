@@ -67,6 +67,7 @@ struct Mesh {
 #endif
 
     Mesh(std::string filename);
+    Mesh(ma_real h);
     ~Mesh();
 
 
@@ -75,6 +76,7 @@ struct Mesh {
     bool is_on_boarder(Point p);
     bool is_in_element(Point p, Element e);
     int point_location(Point p);
+    void get_barycentric_coordinated(int id, Point p, ma_real lambda[3]);
 };
 
 struct MeshFunction {
@@ -100,12 +102,16 @@ namespace solver {
 VectorXd GMRES(const SparseMatrix<double> &A,
                const VectorXd &b, int m, int max_iter,
                double tolerance);
+VectorXd CG(const SparseMatrix<double> &A,
+            const VectorXd &b, int max_iter,
+            double tolerance);
 }
 
 namespace two_scale {
     std::vector<Point> generate_s_theta(ma_real theta);
     ma_real T_epsilon(MeshFunction& u, int id, std::vector<Point> s_theta, ma_real delta);
     MeshFunction perron(ma_real (*f)(Point), ma_real (*g)(Point), Mesh& mesh, ma_real delta, ma_real theta, int p = -1);
+    MeshFunction newton(ma_real (*f)(Point), ma_real (*g)(Point), Mesh& mesh, ma_real delta, ma_real theta, int p = -1);
 }
 
 #endif

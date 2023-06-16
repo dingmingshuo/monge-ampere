@@ -47,6 +47,48 @@ Mesh::Mesh(std::string filename) {
 #endif
 }
 
+Mesh::Mesh(ma_real h) {
+    // Create a uniform triangular mesh on [0, 1] x [0, 1]
+    // with diagram equals to h.
+    h = h / std::sqrt(2.0);
+    int n = (int)std::ceil(1 / h);
+    h = 1.0 / n;
+    this->num_points = (n + 1) * (n + 1);
+    this->num_elements = 2 * n * n;
+    // Create points
+    for (int i = 0; i <= n; i++) {
+        ma_real x = i * h;
+        for (int j = 0; j <= n; j++) {
+            ma_real y = j * h;
+            this->points.push_back(Point(x, y));
+        }
+    }
+    // Create elements
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n; j++) {
+            Element e1, e2;
+            e1.v[0] = i * (n + 1) + j;
+            e1.v[1] = i * (n + 1) + j + 1;
+            e1.v[2] = (i + 1) * (n + 1) + j;
+            e2.v[0] = i * (n + 1) + j + 1;
+            e2.v[1] = (i + 1) * (n + 1) + j + 1;
+            e2.v[2] = (i + 1) * (n + 1) + j;
+            this->elements.push_back(e1);
+            this->elements.push_back(e2);
+        }
+    }
+#if KD_TREE
+    // Build kd-tree
+    std::vector<int> all_elements;
+    for (int i = 0; i < this->num_elements; i++) {
+        all_elements.push_back(i);
+    }
+    // Initilize root node
+    this->tree.push_back(TreeNode());
+    this->build_tree(0, all_elements, 0, 0, 1, 0, 1);
+#endif
+}
+
 Mesh::~Mesh() {
     // Nothing to do here
 }
@@ -199,4 +241,19 @@ int Mesh::point_location(Point p) {
     // If not in this area, return -1
     return id;
 #endif
+}
+
+void Mesh::get_barycentric_coordinated(int id, Point p, ma_real lambda[3]) {
+    Point v0 = this->points[this->elements[id].v[0]];
+    Point v1 = this->points[this->elements[id].v[1]];
+    Point v2 = this->points[this->elements[id].v[2]];
+    // Compute barycentric coordinates
+    ma_real alpha = ((v1.y - v2.y)*(p.x - v2.x) + (v2.x - v1.x)*(p.y - v2.y)) /
+        ((v1.y - v2.y)*(v0.x - v2.x) + (v2.x - v1.x)*(v0.y - v2.y));
+    ma_real beta = ((v2.y - v0.y)*(p.x - v2.x) + (v0.x - v2.x)*(p.y - v2.y)) /
+        ((v1.y - v2.y)*(v0.x - v2.x) + (v2.x - v1.x)*(v0.y - v2.y));
+    ma_real gamma = 1.0 - alpha - beta;
+    lambda[0] = alpha;
+    lambda[1] = beta;
+    lambda[2] = gamma;
 }
