@@ -11,9 +11,9 @@ int main() {
     auto mesh = Mesh(filename);
     auto u_gt = MeshFunction(mesh);
     u_gt.init(u);
-    real h = std::pow(2.0, -8.0);
-    real delta = std::pow(h, 1.0 / 2.0);
-    real theta = std::pow(h, 1.0 / 2.0);
+    ma_real h = std::pow(2.0, -8.0);
+    ma_real delta = std::pow(h, 1.0 / 2.0);
+    ma_real theta = std::pow(h, 1.0 / 2.0);
     auto u_eps = two_scale::perron(f, u, mesh, delta, theta);
     printf("Error |u-u_eps|_inf:\n%e\n", (u_gt - u_eps).norm_inf());
 

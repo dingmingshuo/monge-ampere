@@ -1,6 +1,6 @@
 CC = g++
-CFLAGS = -W -Wall -Wextra -Wconversion -Werror -std=c++17 -Ofast -march=native -g
-INC = -I/usr/local/include -I./include
+CFLAGS = -W -Wall -Wextra -Wconversion -std=c++17 -Ofast -march=native -g
+INC = -I/usr/local/include -I./include -I./eigen
 LIB = -lma -lpthread -fopenmp
 LIBMA = -L./$(BUILD_DIR) -lma
 TEST_LIB = $(LIBMA) -L/usr/local/lib -lgtest

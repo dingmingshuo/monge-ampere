@@ -18,7 +18,7 @@ Mesh::Mesh(std::string filename) {
         if (line[0] == 'v') {
             std::istringstream iss(line.substr(2));
             Point p;
-            real z;
+            ma_real z;
             // Ignore z coordinate
             iss >> p.x >> p.y >> z;
             points.push_back(p);
@@ -52,7 +52,7 @@ Mesh::~Mesh() {
 }
 
 void Mesh::build_tree(int node_id, std::vector<int> elements,
-                      int dim, real lx, real rx, real ly, real ry) {
+                      int dim, ma_real lx, ma_real rx, ma_real ly, ma_real ry) {
     this->tree[node_id].dim = dim;
     if ((int)elements.size() < MAXIMUM_ELEMENTS_IN_LEAF) {
         this->tree[node_id].is_leaf = true;
@@ -149,11 +149,11 @@ bool Mesh::is_in_element(Point p, Element e) {
     Point v1 = this->points[e.v[1]];
     Point v2 = this->points[e.v[2]];
     // Compute barycentric coordinates
-    real alpha = ((v1.y - v2.y)*(p.x - v2.x) + (v2.x - v1.x)*(p.y - v2.y)) /
+    ma_real alpha = ((v1.y - v2.y)*(p.x - v2.x) + (v2.x - v1.x)*(p.y - v2.y)) /
         ((v1.y - v2.y)*(v0.x - v2.x) + (v2.x - v1.x)*(v0.y - v2.y));
-    real beta = ((v2.y - v0.y)*(p.x - v2.x) + (v0.x - v2.x)*(p.y - v2.y)) /
+    ma_real beta = ((v2.y - v0.y)*(p.x - v2.x) + (v0.x - v2.x)*(p.y - v2.y)) /
         ((v1.y - v2.y)*(v0.x - v2.x) + (v2.x - v1.x)*(v0.y - v2.y));
-    real gamma = 1.0 - alpha - beta;
+    ma_real gamma = 1.0 - alpha - beta;
     // Check if p is in e
     return (alpha >= 0.0 - EPS && alpha <= 1.0 + EPS &&
             beta >= 0.0 - EPS && beta <= 1.0 + EPS &&

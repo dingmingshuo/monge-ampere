@@ -1,11 +1,16 @@
 #ifndef __MA_HPP__
 #define __MA_HPP__
 
-#define real double
+#define ma_real double
 
 #include <string>
 #include <vector>
 #include <omp.h>
+
+#include <Eigen/Dense>
+#include <Eigen/Sparse>
+
+using namespace Eigen;
 
 #define EPS (1e-10)
 #define PI (3.14159265358979323846264)
@@ -23,17 +28,17 @@ template <typename T> int sgn(T val) {
 }
 
 struct Point {
-    real x;
-    real y;
+    ma_real x;
+    ma_real y;
     Point();
-    Point(real x, real y);
+    Point(ma_real x, ma_real y);
     Point operator+(Point p);
     Point operator-(Point p);
-    Point operator*(real s);
-    friend Point operator*(real s, Point p);
+    Point operator*(ma_real s);
+    friend Point operator*(ma_real s, Point p);
 
-    real norm();
-    real norm2();
+    ma_real norm();
+    ma_real norm2();
     void normalize();
 };
 
@@ -51,14 +56,14 @@ struct Mesh {
     struct TreeNode {
         bool is_leaf;
         int dim; // 0 for x, 1 for y
-        real par; // Partition value
+        ma_real par; // Partition value
         std::vector<int> elements; // Only valid for leaf nodes
         int lson, rson;
     };
     std::vector<TreeNode> tree;
 
     void build_tree(int node_id, std::vector<int> elements,
-                    int dim, real lx, real rx, real ly, real ry);
+                    int dim, ma_real lx, ma_real rx, ma_real ly, ma_real ry);
 #endif
 
     Mesh(std::string filename);
@@ -73,28 +78,34 @@ struct Mesh {
 };
 
 struct MeshFunction {
-    std::vector<real> values;
+    std::vector<ma_real> values;
     Mesh& mesh;
 
     MeshFunction(Mesh& mesh);
     ~MeshFunction();
 
-    real& operator[](int i);
+    ma_real& operator[](int i);
     MeshFunction operator-(MeshFunction& u);
 
-    void init(real (*f)(Point));
-    real interpolate(Point p);
-    real interpolate(Point p, int id);
-    real second_difference(int id, Point v, real delta);
-    real second_difference(int id, Point p_plus, int e_plus_id, Point p_minus, int e_minus_id, real rho, real delta);
-    real norm_inf();
-    real norm2();
+    void init(ma_real (*f)(Point));
+    ma_real interpolate(Point p);
+    ma_real interpolate(Point p, int id);
+    ma_real second_difference(int id, Point v, ma_real delta);
+    ma_real second_difference(int id, Point p_plus, int e_plus_id, Point p_minus, int e_minus_id, ma_real rho, ma_real delta);
+    ma_real norm_inf();
+    ma_real norm2();
 };
 
+namespace solver {
+VectorXd GMRES(const SparseMatrix<double> &A,
+               const VectorXd &b, int m, int max_iter,
+               double tolerance);
+}
+
 namespace two_scale {
-    std::vector<Point> generate_s_theta(real theta);
-    real T_epsilon(MeshFunction& u, int id, std::vector<Point> s_theta, real delta);
-    MeshFunction perron(real (*f)(Point), real (*g)(Point), Mesh& mesh, real delta, real theta, int p = -1);
+    std::vector<Point> generate_s_theta(ma_real theta);
+    ma_real T_epsilon(MeshFunction& u, int id, std::vector<Point> s_theta, ma_real delta);
+    MeshFunction perron(ma_real (*f)(Point), ma_real (*g)(Point), Mesh& mesh, ma_real delta, ma_real theta, int p = -1);
 }
 
 #endif

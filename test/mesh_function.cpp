@@ -38,7 +38,7 @@ TEST(MeshFunctionTest, SecondDiffenceQuadraticTest) {
     auto f = [](Point p) { return p.x * p.x + p.y * p.y; };
     u.init(f);
     
-    real delta = std::sqrt(1.0 / 32.0);
+    ma_real delta = std::sqrt(1.0 / 32.0);
     Point v(1, 0);
     auto diff = u.second_difference(1210, Point(0, 1), delta);
     EXPECT_NEAR(std::fabs(diff), 2, 0.1);
