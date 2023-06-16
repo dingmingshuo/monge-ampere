@@ -5,14 +5,14 @@
 
 In this repository, we are going to implement two-scale method for Monge-Ampére equation on multi-thread CPU.
 The equation is:
-$$
+```math
 \left\{
 \begin{aligned}
     \det D^2 u = f(x) &\qquad\text{in} &\Omega \subset \mathbb{R}^2, \\
     u = g(x) &\qquad\text{on} &\partial \Omega
 \end{aligned}
 \right.
-$$
+```
 where $\Omega$ is a domain in $\mathbb{R}^2$ and $f(x), g(x)$ are given functions.
 In this repository, we assume that $\Omega$ is a square $[0, 1]^2$, and discretized by a unstructured grid with diagram equals to $h$.
 
